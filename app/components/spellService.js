@@ -3,8 +3,14 @@ import Spell from "../models/spell.js";
 function formatUrl(url) {
     return '//bcw-getter.herokuapp.com/?url=' + encodeURIComponent(url)
 }
+// @ts-ignore
 let _spellApi = axios.create({
     baseURL: ''
+})
+
+// @ts-ignore
+let _sandbox = axios.create({
+    baseURL: 'https://bcw-sandbox.herokuapp.com/api/Jamie/spells/'
 })
 
 let _state = {
@@ -61,11 +67,27 @@ export default class SpellService {
         setState('activeSpell', spell)
     }
 
+    getMySpellBook() {
+        _sandbox.get()
+            .then(res => {
+                let data = res.data.data.map(s => new Spell(s))
+                setState('mySpellBook', data)
+            })
+    }
+
     addSpell() {
-        let spell = _state.mySpellBook.find(s => s.name == _state.activeSpell.name)
-        if (!spell) {
-            _state.mySpellBook.push(_state.activeSpell)
-            _subscribers.mySpellBook.forEach(fn => fn())
+        let spell = _state.mySpellBook
+        if (spell) {
+            _sandbox.post('', spell)
+                .then(res => {
+                    this.getMySpellBook()
+                })
+                .catch(err => {
+                    console.error(err)
+                })
         }
+        //send data to server
+        _subscribers.mySpellBook.forEach(fn => fn())
+
     }
 }

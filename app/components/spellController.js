@@ -20,7 +20,7 @@ function drawSpellbook() {
     let template = ''
     _ss.MySpellBook.forEach(s => {
         template += `
-        <li onclick="app.controllers.spellController.showDetails('${s._id}')">${s.name}</li>
+        <button class="btn btn-info btn-block my-1" onclick="app.controllers.spellController.showDetails('${s._id}')">${s.name}<button class="btn btn-danger btn-block">Remove</button</button>
         `
     })
     document.querySelector('#my-spellbook').innerHTML = template
@@ -32,6 +32,7 @@ export default class SpellController {
         _ss.addSubscriber('activeSpell', drawActiveSpell)
         _ss.addSubscriber('mySpellBook', drawSpellbook)
         _ss.getSpellData()
+        _ss.getMySpellBook()
     }
 
     getDetails(url) {
